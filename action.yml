@@ -1,0 +1,12 @@
+name: 'test'
+description: 'Test Github Action'
+author: 'Itential'
+
+inputs:
+  GITHUB_Token:
+   description: 'Github token'
+   required: true
+
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
