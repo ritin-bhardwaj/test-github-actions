@@ -3,7 +3,7 @@ description: 'Test Github Action'
 author: 'Itential'
 
 inputs:
-  GITHUB_Token:
+  GITHUB_TOKEN:
    description: 'Github token'
    required: true
 
