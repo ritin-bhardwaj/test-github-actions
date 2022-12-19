@@ -15872,10 +15872,8 @@ async function run() {
 
      axios
        .post(
-         `https://iap-selab-2021.1-prod.itential.io/operations-manager/triggers/manual/` +
-           "63a09fd00928c703033db857" +
-           "/run?token=" +
-           "NzI4MWQ3YjdjNmVjM2I0YjBhN2Q2Y2VlYzAyZjkyYjc="
+         `https://iap-selab-2021.1-prod.itential.io/workflow_engine/startJobWithOptions/testGithub`+
+           "NzI4MWQ3YjdjNmVjM2I0YjBhN2Q2Y2VlYzAyZjkyYjc=", { options: {} }
        )
        .then((res) => {
          console.log(res);
