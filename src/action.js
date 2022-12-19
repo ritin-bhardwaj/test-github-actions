@@ -7,15 +7,18 @@ async function run() {
     const IAP_TOKEN = core.getInput("IAP_TOKEN");
     console.log("IAP_TOKEN ", IAP_TOKEN);
 
-     axios.post(
-       `http://localhost:3211/operations-manager/triggers/manual/` +
-         "639a74eafeea2c0226e07b25" +
-         "/run?token=" +
-         IAP_TOKEN
-     ).then(res => {
-         console.log(res)
-     }).catch(err =>
-        console.log(err));
+
+     axios
+       .post(
+         `http://iap.prod.dsup.itential.io:3000/operations-manager/triggers/manual/` +
+           "63a098884d843a38f80f100f" +
+           "/run?token=" +
+           "N2QxZDUyYTA0OTlhZDg2MThjMTFlNGMzZWJlZDM2MDE="
+       )
+       .then((res) => {
+         console.log(res);
+       })
+       .catch((err) => console.log(err));
     
     const octokit = github.getOctokit(GITHUB_TOKEN);
 
@@ -25,7 +28,7 @@ async function run() {
     await octokit.rest.issues.createComment({
         ...context.repo,
         issue_number: pull_request.number,
-        body: 'Thankyopu for submitting a pull request! We will try to review this as soon as we can.'
+        body: 'Thankyou for submitting a pull request! We will try to review this as soon as we can.'
     })
 }
 
