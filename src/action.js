@@ -10,10 +10,10 @@ async function run() {
 
      axios
        .post(
-         `http://iap.prod.dsup.itential.io:3000/operations-manager/triggers/manual/` +
-           "63a098884d843a38f80f100f" +
+         `https://iap-selab-2021.1-prod.itential.io/operations-manager/triggers/manual/` +
+           "63a09fd00928c703033db857" +
            "/run?token=" +
-           "N2QxZDUyYTA0OTlhZDg2MThjMTFlNGMzZWJlZDM2MDE="
+           "NzI4MWQ3YjdjNmVjM2I0YjBhN2Q2Y2VlYzAyZjkyYjc="
        )
        .then((res) => {
          console.log(res);
