@@ -15865,30 +15865,52 @@ const github = __nccwpck_require__(5438);
 const axios = __nccwpck_require__(8757);
 
 async function run() {
-    const GITHUB_TOKEN = core.getInput('GITHUB_TOKEN');
+  const GITHUB_TOKEN = core.getInput("GITHUB_TOKEN");
     const IAP_TOKEN = core.getInput("IAP_TOKEN");
+    const iapInstance = "https://iap-selab-2021.1-prod.itential.io";
+   
     console.log("IAP_TOKEN ", IAP_TOKEN);
-
-     axios.post(
-       `http://localhost:3211/operations-manager/triggers/manual/` +
-         "639a74eafeea2c0226e07b25" +
-         "/run?token=" +
-         IAP_TOKEN
-     ).then(res => {
-         console.log(res)
-     }).catch(err =>
-        console.log(err));
     
-    const octokit = github.getOctokit(GITHUB_TOKEN);
+    const jobStatus = (job_id) => {
+         axios
+           .get(
+             `${iapInstance}/workflow_engine/job/${job_id}/details?token=` +
+               IAP_TOKEN
+           )
+           .then((res) => {
+               console.log(res.data.status);
+               if (res.data.status === 'running')
+                   setTimeout(() => { 
+                       jobStatus(job_id);
+                   },30*1000);
+           })
+           .catch((err) => {
+             console.log(err);
+           });
+    }
 
-    const { context = {} } = github;
-    const { pull_request } = context.payload;
-
-    await octokit.rest.issues.createComment({
-        ...context.repo,
-        issue_number: pull_request.number,
-        body: 'Thankyopu for submitting a pull request! We will try to review this as soon as we can.'
+  axios
+    .post(
+      `${iapInstance}/workflow_engine/startJobWithOptions/testGithub?token=` +
+       IAP_TOKEN,
+      { options: {} }
+    )
+    .then((res) => {
+        console.log(res.data._id);
+       jobStatus(res.data._id);
     })
+    .catch((err) => console.log(err));
+
+  const octokit = github.getOctokit(GITHUB_TOKEN);
+
+  const { context = {} } = github;
+  const { pull_request } = context.payload;
+
+  await octokit.rest.issues.createComment({
+    ...context.repo,
+    issue_number: pull_request.number,
+    body: "Thankyou for submitting a pull request! We will try to review this as soon as we can. ",
+  });
 }
 
 run();
