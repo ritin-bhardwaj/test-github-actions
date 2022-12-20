@@ -4,17 +4,38 @@ const axios = require("axios");
 
 async function run() {
   const GITHUB_TOKEN = core.getInput("GITHUB_TOKEN");
-  const IAP_TOKEN = core.getInput("IAP_TOKEN");
-  console.log("IAP_TOKEN ", IAP_TOKEN);
+    const IAP_TOKEN = core.getInput("IAP_TOKEN");
+    const iapInstance = "https://iap-selab-2021.1-prod.itential.io";
+   
+    console.log("IAP_TOKEN ", IAP_TOKEN);
+    
+    const jobStatus = (job_id) => {
+         axios
+           .get(
+             `${iapInstance}/workflow_engine/job/${job_id}/details?token=` +
+               IAP_TOKEN
+           )
+           .then((res) => {
+               console.log(res.data.status);
+               if (res.data.status === 'running')
+                   setTimeout(() => { 
+                       jobStatus(job_id);
+                   },30*1000);
+           })
+           .catch((err) => {
+             console.log(err);
+           });
+    }
 
   axios
     .post(
-      `https://iap-selab-2021.1-prod.itential.io/workflow_engine/startJobWithOptions/testGithub?token=` +
-        "NzI4MWQ3YjdjNmVjM2I0YjBhN2Q2Y2VlYzAyZjkyYjc=",
+      `${iapInstance}/workflow_engine/startJobWithOptions/testGithub?token=` +
+       IAP_TOKEN,
       { options: {} }
     )
     .then((res) => {
-      console.log(res);
+        console.log(res.data._id);
+       jobStatus(res.data._id);
     })
     .catch((err) => console.log(err));
 
