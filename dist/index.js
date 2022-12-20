@@ -15867,14 +15867,13 @@ const axios = __nccwpck_require__(8757);
 async function run() {
   const GITHUB_TOKEN = core.getInput("GITHUB_TOKEN");
     const IAP_TOKEN = core.getInput("IAP_TOKEN");
-    const iapInstance = "https://iap-selab-2021.1-prod.itential.io";
-   
-    console.log("IAP_TOKEN ", IAP_TOKEN);
+    const IAP_INSTANCE = core.getInput("IAP_INSTANCE");
+    const TIMEOUT = core.getInput("TIMEOUT");
     
     const jobStatus = (job_id) => {
          axios
            .get(
-             `${iapInstance}/workflow_engine/job/${job_id}/details?token=` +
+             `${IAP_INSTANCE}/workflow_engine/job/${job_id}/details?token=` +
                IAP_TOKEN
            )
            .then((res) => {
@@ -15882,7 +15881,7 @@ async function run() {
                if (res.data.status === 'running')
                    setTimeout(() => { 
                        jobStatus(job_id);
-                   },30*1000);
+                   },TIMEOUT*1000);
            })
            .catch((err) => {
              console.log(err);
@@ -15891,7 +15890,7 @@ async function run() {
 
   axios
     .post(
-      `${iapInstance}/workflow_engine/startJobWithOptions/testGithub?token=` +
+      `${IAP_INSTANCE}/workflow_engine/startJobWithOptions/testGithub?token=` +
        IAP_TOKEN,
       { options: {} }
     )
