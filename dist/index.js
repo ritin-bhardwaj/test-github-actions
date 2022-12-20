@@ -15869,6 +15869,7 @@ async function run() {
     const IAP_TOKEN = core.getInput("IAP_TOKEN");
     const IAP_INSTANCE = core.getInput("IAP_INSTANCE");
     const TIMEOUT = core.getInput("TIMEOUT");
+
     
     const jobStatus = (job_id) => {
          axios
@@ -15877,11 +15878,21 @@ async function run() {
                IAP_TOKEN
            )
            .then((res) => {
-               console.log(res.data.status);
+               console.log('Job Status: ',res.data.status);
                if (res.data.status === 'running')
                    setTimeout(() => { 
                        jobStatus(job_id);
-                   },TIMEOUT*1000);
+                   }, TIMEOUT * 1000);
+               else {
+                   axios.get(
+                     `${IAP_INSTANCE}/workflow_engine/job/${job_id}/output?token=` +
+                       IAP_TOKEN
+                   ).then((res) => {
+                       console.log(res.data);
+                   }).catch(err => {
+                       console.log(err);
+                   });
+               }
            })
            .catch((err) => {
              console.log(err);
@@ -15895,7 +15906,7 @@ async function run() {
       { options: {} }
     )
     .then((res) => {
-        console.log(res.data._id);
+        console.log('Job id: ', res.data._id);
        jobStatus(res.data._id);
     })
     .catch((err) => console.log(err));
