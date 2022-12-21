@@ -16,6 +16,10 @@ inputs:
   WORKFLOW:
     description: 'Workflow name to run'
     required: true
+  NO_OF_ATTEMPTS:
+    description: 'No of attempts to check job status'
+    required: true
+    default: '5'
 
 runs:
   using: 'node16'
