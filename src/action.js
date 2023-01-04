@@ -11,7 +11,7 @@ async function run() {
   const NO_OF_ATTEMPTS = core.getInput("NO_OF_INPUTS");
   const JOB_STATUS = core.getInput("JOB_STATUS");
   let count = 0;
-  console.log(JOB_STATUS);
+
   //check the status of the job and return the output
   const jobStatus = (job_id) => {
     axios
@@ -62,8 +62,8 @@ async function run() {
         { options: {} }
       )
       .then((res) => {
-        console.log("Job id: ", res.data._id,JOB_STATUS);
-        if(JOB_STATUS)
+        console.log("Job id: ", res.data._id);
+        if(JOB_STATUS==='true')
           jobStatus(res.data._id);
       })
       .catch((err) => console.log(err));
