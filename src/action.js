@@ -62,7 +62,7 @@ async function run() {
         { options: {} }
       )
       .then((res) => {
-        console.log("Job id: ", res.data._id);
+        console.log("Job id: ", res.data._id,JOB_STATUS);
         if(JOB_STATUS)
           jobStatus(res.data._id);
       })
