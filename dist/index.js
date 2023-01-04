@@ -15895,7 +15895,7 @@ async function run() {
                 IAP_TOKEN
             )
             .then((res) => {
-              console.log(res.data);
+              console.log('Job Output: ',res.data);
             })
             .catch((err) => {
               console.log(err);
