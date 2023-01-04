@@ -33,3 +33,4 @@ jobs:
           IAP_INSTANCE: ${{secrets.IAP_INSTANCE}}
           TIMEOUT: ${{secrets.TIMEOUT}}
           NO_OF_ATTEMPTS: ${{secrets.NO_OF_ATTEMPTS}}
+          WORKFLOW: ${{secrets.WORKFLOW}}

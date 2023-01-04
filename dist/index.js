@@ -15868,6 +15868,7 @@ async function run() {
   const GITHUB_TOKEN = core.getInput("GITHUB_TOKEN");
   const IAP_TOKEN = core.getInput("IAP_TOKEN");
   const IAP_INSTANCE = core.getInput("IAP_INSTANCE");
+  const WORKFLOW = core.getInput("WORKFLOW");
   const TIMEOUT = core.getInput("TIMEOUT");
   const NO_OF_ATTEMPTS = core.getInput("NO_OF_INPUTS");
   let count = 0;
@@ -15916,7 +15917,7 @@ async function run() {
   const startJob = () => {
     axios
       .post(
-        `${IAP_INSTANCE}/workflow_engine/startJobWithOptions/testGithub?token=` +
+        `${IAP_INSTANCE}/workflow_engine/startJobWithOptions/${WORKFLOW}?token=` +
           IAP_TOKEN,
         { options: {} }
       )
@@ -15928,7 +15929,7 @@ async function run() {
   }
   
   startJob();
-  
+
   const octokit = github.getOctokit(GITHUB_TOKEN);
 
   const { context = {} } = github;
