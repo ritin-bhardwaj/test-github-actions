@@ -7,6 +7,13 @@ on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   pull_request:
     types: [opened]
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'Name'
+        required: true
+        default: 'abc'
+        
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -25,3 +32,6 @@ jobs:
           IAP_TOKEN: ${{secrets.IAP_TOKEN}}
           IAP_INSTANCE: ${{secrets.IAP_INSTANCE}}
           TIMEOUT: ${{secrets.TIMEOUT}}
+          NO_OF_ATTEMPTS: ${{secrets.NO_OF_ATTEMPTS}}
+          WORKFLOW: ${{secrets.WORKFLOW}}
+          JOB_STATUS: ${{secrets.JOB_STATUS}}

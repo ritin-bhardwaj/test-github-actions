@@ -1,4 +1,4 @@
-name: 'test'
+name: 'testItl'
 description: 'Test Github Action'
 author: 'Itential'
 
@@ -6,6 +6,23 @@ inputs:
   GITHUB_TOKEN:
    description: 'Github token'
    required: true
+  IAP_INSTANCE:
+    description: 'IAP Instance to run workflow'
+    required: true
+  TIMEOUT:
+    description: 'Time interval to check job status'
+    required: true
+    default: '30'
+  WORKFLOW:
+    description: 'Workflow name to run'
+    required: true
+  NO_OF_ATTEMPTS:
+    description: 'No of attempts to check job status'
+    required: true
+    default: '5'
+  JOB_STATUS:
+    description: 'Display status of the job with the output'
+    required: true
 
 runs:
   using: 'node16'
