@@ -1,7 +1,9 @@
 name: 'testItl'
 description: 'Test Github Action'
 author: 'Itential'
-
+branding:
+  icon: 'activity'
+  color: 'black'
 inputs:
   GITHUB_TOKEN:
    description: 'Github token'
