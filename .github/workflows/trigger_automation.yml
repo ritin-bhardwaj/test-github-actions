@@ -34,3 +34,4 @@ jobs:
           TIMEOUT: ${{secrets.TIMEOUT}}
           NO_OF_ATTEMPTS: ${{secrets.NO_OF_ATTEMPTS}}
           WORKFLOW: ${{secrets.WORKFLOW}}
+          JOB_STATUS: ${{secrets.JOB_STATUS}}
