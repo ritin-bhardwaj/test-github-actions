@@ -20,6 +20,9 @@ inputs:
     description: 'No of attempts to check job status'
     required: true
     default: '5'
+  JOB_STATUS:
+    description: 'Display status of the job with the output'
+    required: true
 
 runs:
   using: 'node16'

@@ -9,8 +9,10 @@ async function run() {
   const WORKFLOW = core.getInput("WORKFLOW");
   const TIMEOUT = core.getInput("TIMEOUT");
   const NO_OF_ATTEMPTS = core.getInput("NO_OF_INPUTS");
+  const JOB_STATUS = core.getInput("JOB_STATUS");
   let count = 0;
-
+  console.log(JOB_STATUS);
+  //check the status of the job and return the output
   const jobStatus = (job_id) => {
     axios
       .get(
@@ -51,7 +53,7 @@ async function run() {
       });
   };
 
-
+//start the job on GitHub event
   const startJob = () => {
     axios
       .post(
@@ -61,7 +63,8 @@ async function run() {
       )
       .then((res) => {
         console.log("Job id: ", res.data._id);
-        jobStatus(res.data._id);
+        if(JOB_STATUS)
+          jobStatus(res.data._id);
       })
       .catch((err) => console.log(err));
   }
