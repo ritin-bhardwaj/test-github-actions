@@ -37,8 +37,10 @@ async function run() {
             .catch((err) => {
               console.log(err);
             });
-        } else if (res.data.status === "complete") {
+        } else if (res.data.status === "canceled") {
           console.log("Job Canceled");
+        } else if (res.data.status === "error") {
+          console.log(res.data);
         } else {
           console.log("Workflow Timeout");
         }
@@ -48,18 +50,23 @@ async function run() {
       });
   };
 
-  axios
-    .post(
-      `${IAP_INSTANCE}/workflow_engine/startJobWithOptions/testGithub?token=` +
-        IAP_TOKEN,
-      { options: {} }
-    )
-    .then((res) => {
-      console.log("Job id: ", res.data._id);
-      jobStatus(res.data._id);
-    })
-    .catch((err) => console.log(err));
 
+  const startJob = () => {
+    axios
+      .post(
+        `${IAP_INSTANCE}/workflow_engine/startJobWithOptions/testGithub?token=` +
+          IAP_TOKEN,
+        { options: {} }
+      )
+      .then((res) => {
+        console.log("Job id: ", res.data._id);
+        jobStatus(res.data._id);
+      })
+      .catch((err) => console.log(err));
+  }
+  
+  startJob();
+  
   const octokit = github.getOctokit(GITHUB_TOKEN);
 
   const { context = {} } = github;
