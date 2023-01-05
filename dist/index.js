@@ -15900,18 +15900,18 @@ async function run() {
               console.log('Job Output: ',res.data);
             })
             .catch((err) => {
-              console.log(err);
+              core.setFailed(err);
             });
         } else if (res.data.status === "canceled") {
-          console.log("Job Canceled");
+          core.setFailed("Job Canceled");
         } else if (res.data.status === "error") {
-          console.log(res.data);
+         core.setFailed(res.data);
         } else {
-          console.log("Workflow Timeout");
+          core.setFailed("Workflow Timeout");
         }
       })
       .catch((err) => {
-        console.log(err);
+       core.setFailed(err);
       });
   };
 
@@ -15928,7 +15928,7 @@ async function run() {
         if(JOB_STATUS==='true')
           jobStatus(res.data._id);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => core.setFailed(err));
   }
   
   startJob();
