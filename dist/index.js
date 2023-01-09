@@ -15868,7 +15868,8 @@ async function run() {
   const GITHUB_TOKEN = core.getInput("GITHUB_TOKEN");
   const IAP_TOKEN = core.getInput("IAP_TOKEN");
   const IAP_INSTANCE = core.getInput("IAP_INSTANCE");
-  const WORKFLOW = core.getInput("WORKFLOW");
+  const API_ENDPOINT = core.getInput("API_ENDPOINT");
+  const API_ENDPOINT_BODY = core.getInput("API_ENDPOINT_BODY");
   const TIMEOUT = core.getInput("TIMEOUT");
   const NO_OF_ATTEMPTS = core.getInput("NO_OF_INPUTS");
   const JOB_STATUS = core.getInput("JOB_STATUS");
@@ -15878,59 +15879,46 @@ async function run() {
   const jobStatus = (job_id) => {
     axios
       .get(
-        `${IAP_INSTANCE}/workflow_engine/job/${job_id}/details?token=` +
-          IAP_TOKEN
+        `${IAP_INSTANCE}/operations-manager/jobs/${job_id}?token=` + IAP_TOKEN
       )
       .then((res) => {
-        console.log("Job Status: ", res.data.status);
-          if (res.data.status === "running" && count < NO_OF_ATTEMPTS) {
-              setTimeout(() => {
-                  count += 1;
-              jobStatus(job_id);
-            }, TIMEOUT * 1000);
-        }
-          
-        else if (res.data.status === "complete") {
-          axios
-            .get(
-              `${IAP_INSTANCE}/workflow_engine/job/${job_id}/output?token=` +
-                IAP_TOKEN
-            )
-            .then((res) => {
-              console.log('Job Output: ',res.data);
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        } else if (res.data.status === "canceled") {
-          console.log("Job Canceled");
-        } else if (res.data.status === "error") {
-          console.log(res.data);
+        console.log("Job Status: ", res.data.data.status);
+        if (res.data.data.status === "running" && count < NO_OF_ATTEMPTS) {
+          setTimeout(() => {
+            count += 1;
+            jobStatus(job_id);
+          }, TIMEOUT * 1000);
+        } else if (res.data.data.status === "complete") {
+          core.setOutput("results", res.data.data.variables);
+          console.log("Job Output: ", res.data.data.variables);
+        } else if (res.data.data.status === "canceled") {
+          core.setFailed("Job Canceled");
+        } else if (res.data.data.status === "error") {
+          core.setFailed(res.data.data.error);
         } else {
-          console.log("Workflow Timeout");
+          core.setFailed("Job Timeout");
         }
       })
       .catch((err) => {
-        console.log(err);
+        core.setFailed(err.response.data);
       });
   };
 
-//start the job on GitHub event
+  //start the job on GitHub event
   const startJob = () => {
     axios
       .post(
-        `${IAP_INSTANCE}/workflow_engine/startJobWithOptions/${WORKFLOW}?token=` +
+        `${IAP_INSTANCE}/operations-manager/triggers/endpoint/${API_ENDPOINT}?token=` +
           IAP_TOKEN,
-        { options: {} }
+        JSON.parse(API_ENDPOINT_BODY)
       )
       .then((res) => {
-        console.log("Job id: ", res.data._id);
-        if(JOB_STATUS==='true')
-          jobStatus(res.data._id);
+        if (JOB_STATUS === "true") jobStatus(res.data.data._id);
       })
-      .catch((err) => console.log(err));
-  }
-  
+      .catch((err) => {
+        core.setFailed(err.response.data);
+      });
+  };
   startJob();
 
   const octokit = github.getOctokit(GITHUB_TOKEN);
