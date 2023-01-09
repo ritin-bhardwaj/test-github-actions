@@ -11,9 +11,11 @@ async function run() {
   const TIMEOUT = core.getInput("TIMEOUT");
   const NO_OF_ATTEMPTS = core.getInput("NO_OF_INPUTS");
   const JOB_STATUS = core.getInput("JOB_STATUS");
+  const JOB_OUTPUT = core.getInput("JOB_OUTPUT");
   let count = 0;
-const x={name:"abc",len:5}
-   core.setOutput("results",x);
+  const x = { name: "abc", len: 5 }
+  core.setOutput("results", x);
+  console.log(JOB_OUTPUT);
   //check the status of the job and return the output
   // const jobStatus = (job_id) => {
   //   axios
