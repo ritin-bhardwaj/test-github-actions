@@ -15,7 +15,7 @@ async function run() {
   let count = 0;
   const x = { name: "abc", len: 5 }
   core.setOutput("results", x);
-  console.log(JOB_OUTPUT);
+  console.log("Output",JOB_OUTPUT);
   //check the status of the job and return the output
   // const jobStatus = (job_id) => {
   //   axios
