@@ -46,4 +46,4 @@ jobs:
     needs: test
     steps:
       - run: echo "job output"
-      - run: echo ${{needs.test.outputs.output1}}
+      - run: echo ${{needs.test.outputs.output1.len}}
