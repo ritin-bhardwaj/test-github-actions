@@ -48,7 +48,7 @@ async function run() {
       .post(
         `${IAP_INSTANCE}/operations-manager/triggers/endpoint/${API_ENDPOINT}?token=` +
           IAP_TOKEN,
-        JSON.parse(JSON.stringify(API_ENDPOINT_BODY))
+        JSON.parse(API_ENDPOINT_BODY)
       )
       .then((res) => {
         if (JOB_STATUS === "true") jobStatus(res.data.data._id);
