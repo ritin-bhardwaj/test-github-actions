@@ -14,7 +14,6 @@ async function run() {
   let count = 0;
 
   let x = API_ENDPOINT_BODY;
-  console.log(x);
   console.log(API_ENDPOINT_BODY,typeof API_ENDPOINT_BODY, JSON.parse(API_ENDPOINT_BODY), typeof JSON.parse(API_ENDPOINT_BODY));
   //check the status of the job and return the output
   const jobStatus = (job_id) => {

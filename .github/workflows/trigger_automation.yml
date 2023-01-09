@@ -26,7 +26,9 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-      - uses: ./
+      - name: API Endpoint Triggers
+        id: itl
+        uses: ./
         with:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           IAP_TOKEN: ${{secrets.IAP_TOKEN}}
@@ -36,3 +38,10 @@ jobs:
           API_ENDPOINT: ${{secrets.API_ENDPOINT}}
           API_ENDPOINT_BODY: ${{secrets.API_ENDPOINT_BODY}}
           JOB_STATUS: ${{secrets.JOB_STATUS}}
+      - name: Get output
+        run: echo "${{steps.itl.outputs.results}}"
+  test2:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - run: echo ${{needs.test.steps.itl.outputs.results}}
