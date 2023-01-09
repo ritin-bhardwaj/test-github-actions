@@ -7,13 +7,15 @@ async function run() {
   const IAP_TOKEN = core.getInput("IAP_TOKEN");
   const IAP_INSTANCE = core.getInput("IAP_INSTANCE");
   const API_ENDPOINT = core.getInput("API_ENDPOINT");
-  const API_ENDPOINT_BODY = JSON.parse(core.getInput("API_ENDPOINT_BODY"));
+  const API_ENDPOINT_BODY = core.getInput("API_ENDPOINT_BODY");
   const TIMEOUT = core.getInput("TIMEOUT");
   const NO_OF_ATTEMPTS = core.getInput("NO_OF_INPUTS");
   const JOB_STATUS = core.getInput("JOB_STATUS");
   let count = 0;
 
-  console.log(typeof API_ENDPOINT_BODY);
+  let x = API_ENDPOINT_BODY;
+  console.log(x);
+  console.log(API_ENDPOINT_BODY,typeof API_ENDPOINT_BODY, JSON.parse(API_ENDPOINT_BODY), typeof JSON.parse(API_ENDPOINT_BODY));
   //check the status of the job and return the output
   const jobStatus = (job_id) => {
     axios
