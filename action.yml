@@ -18,7 +18,7 @@ inputs:
     required: true
   API_ENDPOINT_BODY:
     description: 'the POST body used to create the workflow input'
-    required: false
+    required: true
   NO_OF_ATTEMPTS:
     description: 'No of attempts to check job status'
     required: true
