@@ -15875,6 +15875,7 @@ async function run() {
   const JOB_STATUS = core.getInput("JOB_STATUS");
   let count = 0;
 
+  console.log(typeof API_ENDPOINT_BODY);
   //check the status of the job and return the output
   const jobStatus = (job_id) => {
     axios
