@@ -15875,8 +15875,6 @@ async function run() {
   const JOB_STATUS = core.getInput("JOB_STATUS");
   let count = 0;
 
-  let x = API_ENDPOINT_BODY;
-  console.log(typeof API_ENDPOINT_BODY, JSON.parse(API_ENDPOINT_BODY), typeof JSON.parse(API_ENDPOINT_BODY));
   //check the status of the job and return the output
   const jobStatus = (job_id) => {
     axios
@@ -15891,7 +15889,7 @@ async function run() {
             jobStatus(job_id);
           }, TIMEOUT * 1000);
         } else if (res.data.data.status === "complete") {
-          core.setOutput('results', res.data.data.variables);
+          core.setOutput("results", res.data.data.variables);
           console.log("Job Output: ", res.data.data.variables);
         } else if (res.data.data.status === "canceled") {
           core.setFailed("Job Canceled");
