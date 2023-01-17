@@ -37,7 +37,7 @@ jobs:
           TIMEOUT: ${{secrets.TIMEOUT}}
           NO_OF_ATTEMPTS: ${{secrets.NO_OF_ATTEMPTS}}
           API_ENDPOINT: ${{secrets.API_ENDPOINT}}
-          API_ENDPOINT_BODY: ${{secrets.API_ENDPOINT_BODY}}
+          API_ENDPOINT_BODY: '{"formData":{"str":"testString"}}'
           JOB_STATUS: ${{secrets.JOB_STATUS}}
       - name: Get output
         run: echo "${{steps.step1.outputs.results}}"
