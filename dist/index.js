@@ -15869,14 +15869,14 @@ async function run() {
   const IAP_TOKEN = core.getInput("IAP_TOKEN");
   const IAP_INSTANCE = core.getInput("IAP_INSTANCE");
   const API_ENDPOINT = core.getInput("API_ENDPOINT");
-  const API_ENDPOINT_BODY = core.getInput("API_ENDPOINT_BODY");
+  const API_ENDPOINT_BODY = JSON.parse(core.getInput("API_ENDPOINT_BODY"));
   const TIMEOUT = core.getInput("TIMEOUT");
   const NO_OF_ATTEMPTS = core.getInput("NO_OF_INPUTS");
   const JOB_STATUS = core.getInput("JOB_STATUS");
   const PREV_JOB_OUTPUT = core.getInput("PREV_JOB_OUTPUT");
   let count = 0;
   console.log("Previous Job Output", typeof (PREV_JOB_OUTPUT), PREV_JOB_OUTPUT)
-  console.log(JSON.parse(API_ENDPOINT_BODY))
+  console.log(typeof(API_ENDPOINT_BODY),API_ENDPOINT_BODY)
  try {
    //check the status of the job and return the output
    const jobStatus211 = (job_id) => {
@@ -15958,7 +15958,7 @@ async function run() {
           .post(
             `${IAP_INSTANCE}/operations-manager/triggers/endpoint/${API_ENDPOINT}?token=` +
               IAP_TOKEN,
-            JSON.parse(API_ENDPOINT_BODY)
+            API_ENDPOINT_BODY
           )
           .then((res) => {
             if (JOB_STATUS === "true") {
