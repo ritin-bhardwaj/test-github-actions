@@ -31,6 +31,9 @@ inputs:
   JOB_STATUS:
     description: 'Display status of the job with the output'
     required: true
+  PREV_JOB_OUTPUT:
+    description: 'Prev Job Output'
+    required: true
 
 outputs:
   results: 
@@ -39,3 +42,4 @@ outputs:
 runs:
   using: 'node16'
   main: 'dist/index.js'
+
