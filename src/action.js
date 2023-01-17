@@ -13,7 +13,7 @@ async function run() {
   const JOB_STATUS = core.getInput("JOB_STATUS");
   const PREV_JOB_OUTPUT = core.getInput("PREV_JOB_OUTPUT");
   let count = 0;
-  print("Previous Job Output",typeof(PREV_JOB_OUTPUT),PREV_JOB_OUTPUT)
+  console.log("Previous Job Output",typeof(PREV_JOB_OUTPUT),PREV_JOB_OUTPUT)
  try {
    //check the status of the job and return the output
    const jobStatus211 = (job_id) => {
