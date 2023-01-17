@@ -39,6 +39,7 @@ jobs:
           API_ENDPOINT: ${{secrets.API_ENDPOINT}}
           API_ENDPOINT_BODY: ${{secrets.API_ENDPOINT_BODY}}
           JOB_STATUS: ${{secrets.JOB_STATUS}}
+          PREV_JOB_OUTPUT: "prev result"
       - name: Get output
         run: echo "${{steps.itl.outputs.results}}"
   test2:
