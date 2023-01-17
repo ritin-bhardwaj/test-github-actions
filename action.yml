@@ -3,13 +3,16 @@ description: 'Test Github Action'
 author: 'Itential'
 branding:
   icon: 'activity'
-  color: 'black'
+  color: 'blue'
 inputs:
   GITHUB_TOKEN:
    description: 'Github token'
    required: true
   IAP_INSTANCE:
     description: 'IAP Instance to run workflow'
+    required: true
+  IAP_TOKEN:
+    description: 'IAP Instance token to authorize'
     required: true
   TIMEOUT:
     description: 'Time interval to check job status'
