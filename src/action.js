@@ -1,21 +1,20 @@
-const core = require("@actions/core");
-const axios = require("axios");
+import { getInput, setOutput, setFailed } from "@actions/core";
+import { get, post } from "axios";
 
 async function run() {
-  const IAP_TOKEN = core.getInput("IAP_TOKEN");
-  const IAP_INSTANCE = core.getInput("IAP_INSTANCE");
-  const API_ENDPOINT = core.getInput("API_ENDPOINT");
-  const API_ENDPOINT_BODY = JSON.parse(core.getInput("API_ENDPOINT_BODY"));
-  const TIMEOUT = core.getInput("TIMEOUT");
-  const NO_OF_ATTEMPTS = core.getInput("NO_OF_ATTEMPTS");
-  const JOB_STATUS = core.getInput("JOB_STATUS");
+  const IAP_TOKEN = getInput("IAP_TOKEN");
+  const IAP_INSTANCE = getInput("IAP_INSTANCE");
+  const API_ENDPOINT = getInput("API_ENDPOINT");
+  const API_ENDPOINT_BODY = JSON.parse(getInput("API_ENDPOINT_BODY"));
+  const TIMEOUT = getInput("TIMEOUT");
+  const NO_OF_ATTEMPTS = getInput("NO_OF_ATTEMPTS");
+  const JOB_STATUS = getInput("JOB_STATUS");
   let count = 0;
 
   try {
     //check the status of the job and return the output (IAP release <= 2021.1)
     const jobStatus211 = (job_id) => {
-      axios
-        .get(
+      get(
           `${IAP_INSTANCE}/workflow_engine/job/${job_id}/details?token=` +
             IAP_TOKEN
         )
@@ -27,36 +26,34 @@ async function run() {
               jobStatus211(job_id);
             }, TIMEOUT * 1000);
           } else if (res.data.status === "complete") {
-            axios
-              .get(
+            get(
                 `${IAP_INSTANCE}/workflow_engine/job/${job_id}/output?token=` +
                   IAP_TOKEN
               )
               .then((res) => {
-                core.setOutput("results", res.data.variables);
+                setOutput("results", res.data.variables);
               })
               .catch((err) => {
-                core.setFailed(err.response.data);
+                setFailed(err.response.data);
               });
           } else if (res.data.status === "canceled") {
-            core.setFailed("Job Canceled");
+            setFailed("Job Canceled");
           } else if (res.data.status === "error") {
-            core.setFailed(res.data.error);
+            setFailed(res.data.error);
           } else {
-            core.setFailed(
+            setFailed(
               "Job Timed out based upon user defined TIMEOUT and NO_OF_ATTEMPTS"
             );
           }
         })
         .catch((err) => {
-          core.setFailed(err.response.data);
+          setFailed(err.response.data);
         });
     };
 
     //check the status of the job and return the output (IAP release > 2021.1)
     const jobStatus221 = (job_id) => {
-      axios
-        .get(
+      get(
           `${IAP_INSTANCE}/operations-manager/jobs/${job_id}?token=` + IAP_TOKEN
         )
         .then((res) => {
@@ -67,34 +64,32 @@ async function run() {
               jobStatus221(job_id);
             }, TIMEOUT * 1000);
           } else if (res.data.data.status === "complete") {
-            core.setOutput("results", res.data.data.variables);
+            setOutput("results", res.data.data.variables);
           } else if (res.data.data.status === "canceled") {
-            core.setFailed("Job Canceled");
+            setFailed("Job Canceled");
           } else if (res.data.data.status === "error") {
-            core.setFailed(res.data.data.error);
+            setFailed(res.data.data.error);
           } else {
-            core.setFailed(
+            setFailed(
               "Job Timed out based upon user defined TIMEOUT and NO_OF_ATTEMPTS"
             );
           }
         })
         .catch((err) => {
-          core.setFailed(err.response.data);
+          setFailed(err.response.data);
         });
     };
 
     //start the job on GitHub event
     const startJob = () => {
-      axios
-        .get(`${IAP_INSTANCE}/health/server?token=` + IAP_TOKEN)
+      get(`${IAP_INSTANCE}/health/server?token=` + IAP_TOKEN)
         .then((res) => {
           const release = res.data.release.substring(
             0,
             res.data.release.lastIndexOf(".")
           );
 
-          axios
-            .post(
+          post(
               `${IAP_INSTANCE}/operations-manager/triggers/endpoint/${API_ENDPOINT}?token=` +
                 IAP_TOKEN,
               API_ENDPOINT_BODY
@@ -106,17 +101,17 @@ async function run() {
               }
             })
             .catch((err) => {
-              core.setFailed(err.response.data);
+              setFailed(err.response.data);
             });
         })
         .catch((err) => {
-          core.setFailed(err);
+          setFailed(err);
         });
     };
 
     startJob();
   } catch (e) {
-    core.setFailed(e);
+    setFailed(e);
   }
 }
 
