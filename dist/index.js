@@ -9026,13 +9026,12 @@ async function run() {
   const API_ENDPOINT = core.getInput("API_ENDPOINT");
   const API_ENDPOINT_BODY = JSON.parse(core.getInput("API_ENDPOINT_BODY"));
   const TIMEOUT = core.getInput("TIMEOUT");
-  const NO_OF_ATTEMPTS = core.getInput("NO_OF_INPUTS");
+  const NO_OF_ATTEMPTS = core.getInput("NO_OF_ATTEMPTS");
   const JOB_STATUS = core.getInput("JOB_STATUS");
   let count = 0;
 
   try {
-    console.log(typeof TIMEOUT,TIMEOUT,typeof NO_OF_ATTEMPTS,NO_OF_ATTEMPTS)
-    //check the status of the job and return the output
+    //check the status of the job and return the output (IAP release <= 2021.1)
     const jobStatus211 = (job_id) => {
       axios
         .get(
@@ -9071,6 +9070,7 @@ async function run() {
         });
     };
 
+    //check the status of the job and return the output (IAP release > 2021.1)
     const jobStatus221 = (job_id) => {
       axios
         .get(
