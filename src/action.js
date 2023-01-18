@@ -43,7 +43,9 @@ async function run() {
           } else if (res.data.status === "error") {
             core.setFailed(res.data.error);
           } else {
-            core.setFailed("Job Timeout");
+            core.setFailed(
+              "Job Timed out based upon user defined TIMEOUT and NO_OF_ATTEMPTS"
+            );
           }
         })
         .catch((err) => {
@@ -71,7 +73,9 @@ async function run() {
           } else if (res.data.data.status === "error") {
             core.setFailed(res.data.data.error);
           } else {
-            core.setFailed("Job Timeout");
+            core.setFailed(
+              "Job Timed out based upon user defined TIMEOUT and NO_OF_ATTEMPTS"
+            );
           }
         })
         .catch((err) => {
