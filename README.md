@@ -1,4 +1,4 @@
-# JavaScript action to run IAP Automation
+# Github action to run IAP Automation
 
 ## Usage
 
