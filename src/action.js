@@ -1,74 +1,118 @@
-const core = require("@actions/core");
-const github = require("@actions/github");
-const axios = require("axios");
+import { getInput, setOutput, setFailed } from "@actions/core";
+import { get, post } from "axios";
 
 async function run() {
-  const GITHUB_TOKEN = core.getInput("GITHUB_TOKEN");
-  const IAP_TOKEN = core.getInput("IAP_TOKEN");
-  const IAP_INSTANCE = core.getInput("IAP_INSTANCE");
-  const API_ENDPOINT = core.getInput("API_ENDPOINT");
-  const API_ENDPOINT_BODY = core.getInput("API_ENDPOINT_BODY");
-  const TIMEOUT = core.getInput("TIMEOUT");
-  const NO_OF_ATTEMPTS = core.getInput("NO_OF_INPUTS");
-  const JOB_STATUS = core.getInput("JOB_STATUS");
+  const IAP_TOKEN = getInput("IAP_TOKEN");
+  const IAP_INSTANCE = getInput("IAP_INSTANCE");
+  const API_ENDPOINT = getInput("API_ENDPOINT");
+  const API_ENDPOINT_BODY = JSON.parse(getInput("API_ENDPOINT_BODY"));
+  const TIMEOUT = getInput("TIME_INTERVAL");
+  const NO_OF_ATTEMPTS = getInput("NO_OF_ATTEMPTS");
+  const JOB_STATUS = getInput("JOB_STATUS");
   let count = 0;
 
-  //check the status of the job and return the output
-  const jobStatus = (job_id) => {
-    axios
-      .get(
-        `${IAP_INSTANCE}/operations-manager/jobs/${job_id}?token=` + IAP_TOKEN
-      )
-      .then((res) => {
-        console.log("Job Status: ", res.data.data.status);
-        if (res.data.data.status === "running" && count < NO_OF_ATTEMPTS) {
-          setTimeout(() => {
-            count += 1;
-            jobStatus(job_id);
-          }, TIMEOUT * 1000);
-        } else if (res.data.data.status === "complete") {
-          core.setOutput("results", res.data.data.variables);
-          console.log("Job Output: ", res.data.data.variables);
-        } else if (res.data.data.status === "canceled") {
-          core.setFailed("Job Canceled");
-        } else if (res.data.data.status === "error") {
-          core.setFailed(res.data.data.error);
-        } else {
-          core.setFailed("Job Timeout");
-        }
-      })
-      .catch((err) => {
-        core.setFailed(err.response.data);
-      });
-  };
+  try {
+    //check the status of the job and return the output (IAP release <= 2021.1)
+    const jobStatus211 = (job_id) => {
+      get(
+          `${IAP_INSTANCE}/workflow_engine/job/${job_id}/details?token=` +
+            IAP_TOKEN
+        )
+        .then((res) => {
+          console.log("Job Status: ", res.data.status);
+          if (res.data.status === "running" && count < NO_OF_ATTEMPTS) {
+            setTimeout(() => {
+              count += 1;
+              jobStatus211(job_id);
+            }, TIMEOUT * 1000);
+          } else if (res.data.status === "complete") {
+            get(
+                `${IAP_INSTANCE}/workflow_engine/job/${job_id}/output?token=` +
+                  IAP_TOKEN
+              )
+              .then((res) => {
+                setOutput("results", res.data.variables);
+              })
+              .catch((err) => {
+                setFailed(err.response.data);
+              });
+          } else if (res.data.status === "canceled") {
+            setFailed("Job Canceled");
+          } else if (res.data.status === "error") {
+            setFailed(res.data.error);
+          } else {
+            setFailed(
+              "Job Timed out based upon user defined TIMEOUT and NO_OF_ATTEMPTS"
+            );
+          }
+        })
+        .catch((err) => {
+          setFailed(err.response.data);
+        });
+    };
 
-  //start the job on GitHub event
-  const startJob = () => {
-    axios
-      .post(
-        `${IAP_INSTANCE}/operations-manager/triggers/endpoint/${API_ENDPOINT}?token=` +
-          IAP_TOKEN,
-        JSON.parse(API_ENDPOINT_BODY)
-      )
-      .then((res) => {
-        if (JOB_STATUS === "true") jobStatus(res.data.data._id);
-      })
-      .catch((err) => {
-        core.setFailed(err.response.data);
-      });
-  };
-  startJob();
+    //check the status of the job and return the output (IAP release > 2021.1)
+    const jobStatus221 = (job_id) => {
+      get(
+          `${IAP_INSTANCE}/operations-manager/jobs/${job_id}?token=` + IAP_TOKEN
+        )
+        .then((res) => {
+          console.log("Job Status: ", res.data.data.status);
+          if (res.data.data.status === "running" && count < NO_OF_ATTEMPTS) {
+            setTimeout(() => {
+              count += 1;
+              jobStatus221(job_id);
+            }, TIMEOUT * 1000);
+          } else if (res.data.data.status === "complete") {
+            setOutput("results", res.data.data.variables);
+          } else if (res.data.data.status === "canceled") {
+            setFailed("Job Canceled");
+          } else if (res.data.data.status === "error") {
+            setFailed(res.data.data.error);
+          } else {
+            setFailed(
+              "Job Timed out based upon user defined TIMEOUT and NO_OF_ATTEMPTS"
+            );
+          }
+        })
+        .catch((err) => {
+          setFailed(err.response.data);
+        });
+    };
 
-  const octokit = github.getOctokit(GITHUB_TOKEN);
+    //start the job on GitHub event
+    const startJob = () => {
+      get(`${IAP_INSTANCE}/health/server?token=` + IAP_TOKEN)
+        .then((res) => {
+          const release = res.data.release.substring(
+            0,
+            res.data.release.lastIndexOf(".")
+          );
 
-  const { context = {} } = github;
-  const { pull_request } = context.payload;
+          post(
+              `${IAP_INSTANCE}/operations-manager/triggers/endpoint/${API_ENDPOINT}?token=` +
+                IAP_TOKEN,
+              API_ENDPOINT_BODY
+            )
+            .then((res) => {
+              if (Boolean(Number(JOB_STATUS)) === true) {
+                if (Number(release) <= 2021.1) jobStatus211(res.data._id);
+                else jobStatus221(res.data.data._id);
+              }
+            })
+            .catch((err) => {
+              setFailed(err.response.data);
+            });
+        })
+        .catch((err) => {
+          setFailed(err);
+        });
+    };
 
-  await octokit.rest.issues.createComment({
-    ...context.repo,
-    issue_number: pull_request.number,
-    body: "Thankyou for submitting a pull request! We will try to review this as soon as we can. ",
-  });
+    startJob();
+  } catch (e) {
+    setFailed(e);
+  }
 }
 
 run();
