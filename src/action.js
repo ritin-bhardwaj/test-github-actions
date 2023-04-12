@@ -41,7 +41,7 @@ async function run() {
                 setFailed(err.response.data);
               });
           } else if (res.data.status === "canceled") {
-            setFailed("Job Canceled");
+            setFailed("Job Canceled.");
           } else if (res.data.status === "error") {
             setFailed(res.data.error);
           } else {
