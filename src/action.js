@@ -1,23 +1,24 @@
-import { getInput, setOutput, setFailed } from "@actions/core";
-import { get, post } from "axios";
+const { getInput, setOutput, setFailed } = require("@actions/core");
+const { get,post } = require('axios')
 
 async function run() {
   const IAP_TOKEN = getInput("IAP_TOKEN");
   const IAP_INSTANCE = getInput("IAP_INSTANCE");
-  const API_ENDPOINT = getInput("API_ENDPOINT");
   const API_ENDPOINT_BODY = JSON.parse(getInput("API_ENDPOINT_BODY"));
   const TIMEOUT = getInput("TIME_INTERVAL");
   const NO_OF_ATTEMPTS = getInput("NO_OF_ATTEMPTS");
   const JOB_STATUS = getInput("JOB_STATUS");
+  let API_ENDPOINT = getInput("API_ENDPOINT");
+  if (API_ENDPOINT.endsWith('/')) API_ENDPOINT = API_ENDPOINT.substring(0, API_ENDPOINT.length - 1);
   let count = 0;
 
   try {
     //check the status of the job and return the output (IAP release <= 2021.1)
     const jobStatus211 = (job_id) => {
       get(
-          `${IAP_INSTANCE}/workflow_engine/job/${job_id}/details?token=` +
-            IAP_TOKEN
-        )
+        `${IAP_INSTANCE}/workflow_engine/job/${job_id}/details?token=` +
+        IAP_TOKEN
+      )
         .then((res) => {
           console.log("Job Status: ", res.data.status);
           if (res.data.status === "running" && count < NO_OF_ATTEMPTS) {
@@ -27,9 +28,9 @@ async function run() {
             }, TIMEOUT * 1000);
           } else if (res.data.status === "complete") {
             get(
-                `${IAP_INSTANCE}/workflow_engine/job/${job_id}/output?token=` +
-                  IAP_TOKEN
-              )
+              `${IAP_INSTANCE}/workflow_engine/job/${job_id}/output?token=` +
+              IAP_TOKEN
+            )
               .then((res) => {
                 setOutput("results", res.data.variables);
               })
@@ -54,8 +55,8 @@ async function run() {
     //check the status of the job and return the output (IAP release > 2021.1)
     const jobStatus221 = (job_id) => {
       get(
-          `${IAP_INSTANCE}/operations-manager/jobs/${job_id}?token=` + IAP_TOKEN
-        )
+        `${IAP_INSTANCE}/operations-manager/jobs/${job_id}?token=` + IAP_TOKEN
+      )
         .then((res) => {
           console.log("Job Status: ", res.data.data.status);
           if (res.data.data.status === "running" && count < NO_OF_ATTEMPTS) {
@@ -90,10 +91,10 @@ async function run() {
           );
 
           post(
-              `${IAP_INSTANCE}/operations-manager/triggers/endpoint/${API_ENDPOINT}?token=` +
-                IAP_TOKEN,
-              API_ENDPOINT_BODY
-            )
+            `${IAP_INSTANCE}/operations-manager/triggers/endpoint/${API_ENDPOINT}?token=` +
+            IAP_TOKEN,
+            API_ENDPOINT_BODY
+          )
             .then((res) => {
               if (Boolean(Number(JOB_STATUS)) === true) {
                 if (Number(release) <= 2021.1) jobStatus211(res.data._id);
