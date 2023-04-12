@@ -33,5 +33,5 @@ outputs:
     description: 'API Trigger output variables'
 
 runs:
-  using: 'node19'
+  using: 'node16'
   main: 'dist/index.js'
